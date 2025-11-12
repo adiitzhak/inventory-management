@@ -11,7 +11,7 @@ This project demonstrates the use of **Singleton design pattern**, basic CRUD op
 - Find a product by name
 - Update product quantity
 - Remove a product from inventory
-- Singleton database connection (only one connection to MongoDB)
+- Singleton database connection
 
 
 

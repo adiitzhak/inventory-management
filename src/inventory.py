@@ -3,49 +3,42 @@ from src.database.database import Database
 
 class Inventory:
     def __init__(self):
-        """init null directionary"""
-        self.__products = {}
+        """init null database"""       
         self.database = Database()
         
-    @property
-    def products(self):
-        """get products from directionary"""
-        return self.__products
           
-    def add_product(self,product : Product):
-        """ add product to products"""
-        if product in self.__products.keys():
-            self.__products[product] += 1
+    def add_product(self, product : Product):
+        """ add product to database"""
+        if self.database.collection.find_one({"name": product.name}):
+            self.database.collection.update_one({"name" : product.name} ,{"$inc": {"quantity": 1}} )           
         else:
-            self.__products[product] = 1
-            
-        
-        
+            self.database.collection.insert_one({"name": product.name, "price" : product.price ,"quantity": 1})
     def remove_product(self, product_name : str) -> None:
-        """remove product from dictionary"""
-        for item in self.__products.keys():
-             if item.name == product_name:
-                self.__products[item] -= 1
-                if self.__products[item] == 0:
-                    del self.__products[item]
-                return
-        raise ValueError("we can't found this product :(")
-       
-     
+        """remove product from database"""
+               
+        product = self.database.collection.find_one({"name": product_name})
+        if not product:
+            raise ValueError("cannot found this product")
+        
+        if product["quantity"] > 1:
+             self.database.collection.update_one({"name": product_name}, {"$inc" : {"quantity" : -1}})
+        else:
+             self.database.collection.delete_one({"name" : product_name})
+        
+        
     def get_product(self, product_name : str) ->Product:
         """return product by name"""
-        for product in self.__products.keys():
-             if product.name == product_name:
-                 return product
-             raise ValueError("we can't found this product")
-        return None
-
-         
+        product= self.database.collection.find_one({"name": product_name})
+        if not product:
+            raise ValueError("cannot fount this product")
+        else:
+            return Product(name= product["name"], price = product["price"])
+          
     def total_inventory_price(self) -> float:
         """calculate total price"""
         total_price = 0.0
-        for product, count in self.__products.items():
-            total_price += product.price * count
+        for data in self.database.collection.find():
+            total_price += data["price"] * data["quantity"]
         return total_price
             
            

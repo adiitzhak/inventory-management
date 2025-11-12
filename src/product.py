@@ -1,21 +1,22 @@
 from typing import Union
 class Product:
-    def __init__(self,name : str, value : Union[int, float] ):
+    def __init__(self,name : str, price : Union[int, float] ):
         self.__name = name
-        self.__value = value
+        self.__price = price
+        
     @property
     def name(self) -> str: 
         return self.__name
     
     @property
     def price(self)-> float:
-        return self.__value
+        return self.__price
     
     @price.setter
-    def price(self,value):
-        if value<0:
+    def price(self,price):
+        if price<0:
             raise ValueError("value cannot be negative")
-        self.__value = value
+        self.__price = price
     
     @name.setter
     def name(self, name):
